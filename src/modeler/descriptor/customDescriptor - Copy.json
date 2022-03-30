@@ -1,0 +1,56 @@
+{
+  "name": "TrustAnalysis",
+  "uri": "http://fujitsu.com/schema/bpmn/tra",
+  "prefix": "tra",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "types": [
+    {
+      "name": "AnalyzedNode",
+      "extends": [
+        "bpmn:FlowNode"
+      ],
+      "properties": [
+        {
+          "name": "score",
+          "isAttr": true,
+          "type": "Integer"
+        }
+      ]
+    },
+    {
+      "name": "ConcernList",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "inputDate",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "concerns",
+          "isMany": true,
+          "type": "concern"
+        }
+      ]
+    },
+    {
+      "name": "concern",
+      "properties": [
+        {
+          "name": "inputUser",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "text",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    }
+  ],
+  "emumerations": [],
+  "associations": []
+}
