@@ -48,7 +48,10 @@ const drawCanvas = async (bpmnXML) => {
   const eventBus = bpmnJs.get("eventBus");
   const elementRegistry = bpmnJs.get("elementRegistry");
   const moddle = bpmnJs.get('moddle');
-  const modeling = bpmnJs.get('modeling'); // only modeler
+  let modeling;
+  if(CONS_MODE == 'modeler') {
+    modeling = bpmnJs.get('modeling'); // only modeler
+  }
   
   // zoom to fit full viewport
   canvas.zoom('fit-viewport');
@@ -70,6 +73,9 @@ const drawCanvas = async (bpmnXML) => {
 // debug entry                                    ---------------- //
 const debug = async (eventBus, cliHelper) => {
   
+  // Custom CliHelper for viewer
+  const cCliHelper = new CliCustomHelper(cliHelper);
+  
   // getElementsBProperties -- debug
   let taskElms = await cliHelper.getElementsBProperties('Task');
   console.log(`taskElms = ${JSON.stringify(taskElms)}`)
@@ -85,15 +91,20 @@ const debug = async (eventBus, cliHelper) => {
   // console.log(bo)
   
   // customCliHelper -- debug
-  const cCliHelper = new CliCustomHelper(cliHelper);
-  let str = cCliHelper.getElementBPropsExtensions(extensionElement);
-  let obj = cCliHelper.getElementBPropsExtensionsObject(extensionElement);
+  let str = cCliHelper.getElementBPropsExtension(extensionElement, EX_PROP_NAME);
+  let obj = cCliHelper.getElementBPropsExtensionObject(extensionElement, EX_PROP_NAME);
   console.log(bo);
   console.log(str);
   console.log(obj);
-  // let ary = await cCliHelper.getElementsBPropsExtensionsObject('Task', EX_ELEMENT_NAME)
-  // console.log(ary)  -- FIXME: error on json.parse
+  let ary = await cCliHelper.getElementsBPropsExtensionObject('Task', EX_ELEMENT_NAME, EX_PROP_NAME)
+  console.log(ary)
+  obj.context = 'Hello, my friends!';
+  cCliHelper.setElementBPropsExtensionObject(extensionElement, EX_PROP_NAME, obj);
+  obj = cCliHelper.getElementBPropsExtensionObject(extensionElement, EX_PROP_NAME);
+  console.log(obj)
   
+  let ary2 = await cCliHelper.getElementsHaveConcerns('Task', EX_ELEMENT_NAME, EX_PROP_NAME)
+  console.log(ary2)
   
   /** element contextmenu(right click) event
   */
@@ -310,6 +321,7 @@ const EL_LINK_DOWNLOAD = "[data-download]";
 const HIGH_PRIORITY = 1500;
 
 const EX_ELEMENT_NAME = 'tra:ConcernList';
+const EX_PROP_NAME = 'concerns';
 
 const aryHbsComponents = [
   {el: '#form-component', data: {}, hbsPath: './viewer/components/form-component.hbs'},

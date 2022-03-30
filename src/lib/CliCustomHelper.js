@@ -23,53 +23,84 @@ class CliCustomeHelper {
   }
 
   /********
-   * 4. getElementBPropsExtensions(exElm: extensionElement) : string (json_str) */
-  getElementBPropsExtensions(exElm) {
-    let retStr = exElm.concerns
+   * 4. getElementBPropsExtension(exElm: extensionElement, elm_prop:string) : string (json_str) 
+   *      ex) const EX_PROP_NAME = 'concerns'; // elm_prop
+   */
+  getElementBPropsExtension(exElm, elm_prop) {
+    let retStr = exElm[elm_prop]
     return retStr
   }
   
   /********
-   * 5. setElementBPropsExtensions(id: string, jsonObj: object) : void */
-  setElementBPropsExtensions(id, jsonObj, elm_type, elm_target) {
-    let { extensionElements }  = this._cliHelper.getExtensionElementsAll(id, elm_type);
-    let extensionElement = this._cliHelper.getExtensionElement(extensionElements, elm_type)
-    extensionElement[elm_target] = JSON.stringify(jsonObj).htmlEscape();
+   * 5. setElementBPropsExtension(exElm: extensionElement, elm_prop:string, jsonObj: object) : void */
+  setElementBPropsExtensionObject(exElm, elm_prop, jsonObj) {
+    exElm[elm_prop] = JSON.stringify(jsonObj).htmlEscape();
   }
   
   /********
-   * 6. getElementBPropsExtensionsObject(id: string) : object */
-  getElementBPropsExtensionsObject(exElm) {
+   * 6. getElementBPropsExtensionObject(exElm: extensionElement) : object(obj parsed form jsonStr) */
+  getElementBPropsExtensionObject(exElm, elm_prop) {
     let retObj = {};
-    let jsonStr = this.getElementBPropsExtensions(exElm);
-    if(jsonStr == ""){
-      retObj = {}
+    let jsonStr = this.getElementBPropsExtension(exElm, elm_prop);
+    // console.log(`jsonStr = ${jsonStr}`)
+    if(jsonStr){
+      try {
+        retObj = JSON.parse(jsonStr);
+      } catch(e) {
+        console.log(`JSON.parse errer: ${jsonStr}`)
+        console.log(e);
+        retObj = {}
+      }
     } else {
-      retObj = JSON.parse(jsonStr);
+      retObj = {}
     }
     return retObj
   }
   
   /********
-   * 7. getElementsBPropsExtensionsObject(elm_category: string) : object[] */
-  async getElementsBPropsExtensionsObject(elm_category, elm_type) {
+   * 7. getElementsBPropsExtensionObject(elm_category: string, elm_type) : object[] */ // const EX_ELEMENT_NAME = 'tra:ConcernList';
+  async getElementsBPropsExtensionObject(elm_category, elm_type, elm_prop) {
     let retAry = [];
     let tempAry = [];
     let obj = {};
     // 
     if (this.aryCONS_TASK_CATEGORY.includes(elm_category)) {
       tempAry = await this._cliHelper.getElemetsIds(elm_category);
-      console.log(tempAry)
+      // console.log(tempAry)
       // 
       // If using async/await, can not use Array.map()
       for (let keyObj of tempAry) {
         let { extensionElements }  = this._cliHelper.getExtensionElementsAll(keyObj.id, elm_type);
         let extensionElement = this._cliHelper.getExtensionElement(extensionElements, elm_type)
         
-        obj = this.getElementBPropsExtensionsObject(extensionElement)
-        console.log(obj);
+        obj = this.getElementBPropsExtensionObject(extensionElement, elm_prop)
+        // console.log(obj);
         if (obj){
           retAry.push(obj);
+        }
+      }
+    }
+    return retAry
+  }
+  
+  async getElementsHaveConcerns(elm_category, elm_type, elm_prop) {
+    let retAry = [];
+    let tempAry = [];
+    let obj = {};
+    // 
+    if (this.aryCONS_TASK_CATEGORY.includes(elm_category)) {
+      tempAry = await this._cliHelper.getElemetsIds(elm_category);
+      // console.log(tempAry)
+      // 
+      // If using async/await, can not use Array.map()
+      for (let keyObj of tempAry) {
+        let { extensionElements }  = this._cliHelper.getExtensionElementsAll(keyObj.id, elm_type);
+        let extensionElement = this._cliHelper.getExtensionElement(extensionElements, elm_type)
+        
+        obj = this.getElementBPropsExtensionObject(extensionElement, elm_prop)
+        // console.log(obj);
+        if (obj){
+          retAry.push(keyObj.id);
         }
       }
     }
