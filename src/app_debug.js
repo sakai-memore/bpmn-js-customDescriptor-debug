@@ -330,8 +330,8 @@ const divComponents = `
   <div id='form-component'></div>
 `;
 
-let CONS_MODE = 'viewer'
-// let CONS_MODE = 'modeler'
+// 	let CONS_MODE = 'viewer'
+let CONS_MODE = 'modeler'
 
 let bpmnJs = {};
 bpmnJs = get_instance(CONS_MODE);

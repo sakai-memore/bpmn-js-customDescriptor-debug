@@ -1,5 +1,6 @@
-import CliHelper from './CliHelper';
+// import CliHelper from './CliHelper';
 import $ from 'jquery';
+import _ from 'lodash';
 
 String.prototype.htmlEscape = function() {
   return $('<div/>').text(this.toString()).html();
@@ -99,7 +100,7 @@ class CliCustomeHelper {
         
         obj = this.getElementBPropsExtensionObject(extensionElement, elm_prop)
         // console.log(obj);
-        if (obj){
+        if (! _.isEmpty(obj)){
           retAry.push(keyObj.id);
         }
       }
